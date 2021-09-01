@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar color = "primary">
+    <ion-element [ngSwitch]="tipo">
+      <ion-title appTitle style="text-align:center" *ngSwitchCase="'LogRiegos'">RIEGOS</ion-title>
+      <ion-title appTitle style="text-align:center" *ngSwitchCase="'Mediciones'">MEDICIONES</ion-title>
+    </ion-element>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+    <div *ngIf="tipo === 'LogRiegos'">
+      <ion-item *ngFor="let item of info">
+          <ion-label>
+              <h2>Fecha:{{item.fecha.toLocaleString('short')}} - Valor: {{item.apertura}} </h2>
+          </ion-label>
+      </ion-item>
+    </div>
+    <div *ngIf="tipo === 'Mediciones'">
+      <ion-item *ngFor="let item of info">
+          <ion-label>
+              <h2>Fecha:{{item.fecha.toLocaleString()}} - Valor: {{item.valor}} </h2>
+          </ion-label>
+      </ion-item>
+    </div>
+</ion-list>
+  <ion-grid>
+    <ion-row>
+      <ion-col text-center>
+        <ion-button (click)="close()">Close</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

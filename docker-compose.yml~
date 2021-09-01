@@ -29,7 +29,7 @@ services:
     node-backend:
         image:                   abassi/nodejs-server:10.0-dev
         volumes:
-            -                    ./backend:/home/node/app/src
+            -                    ./src/backend:/home/node/app/src
         networks:
             -                    app-fullstack-net
         depends_on:
