@@ -23,8 +23,8 @@ getListaDispositivo():Promise<Dispositivo[]>{
   console.log("el string del endpoint es: "+str);
   return this._http.get(str).toPromise()
     .then((lista:Dispositivo[])=>{
-      console.log("Promesa getListaDsipositivo finalizada");
-      console.log(lista);
+      //console.log("Promesa getListaDsipositivo finalizada");
+      //console.log(lista);
       return lista;
   });
 }

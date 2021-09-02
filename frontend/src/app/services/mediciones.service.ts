@@ -49,13 +49,11 @@ Devuelve una promesa de última medicion para un dispositivo, haciento un http g
   El id de la medicion lo detemina la BD (valor autoincrementable)
   */
   nuevaMedicion(med:Mediciones){
-    let str:string = this.urlApi + "/medicion/nueva";
-    let _dispoId = med.dispositivoId;
-    let _fecha = med.fecha;
-    let _val:string  = med.valor.toString();
-    console.log("Promesa nuevaMedicio iniciada: " + _dispoId +" valor: "+_val);   
+    let str:string = this.urlApi + "/medicion/nueva/";
+    console.log("Promesa nuevaMedicio iniciada: " + med.dispositivoId +" valor: "+ med.valor);   
     console.log("el string del endpoint es: "+str);
-    return this._http.post(str, {fecha: _fecha, dipositivoId:_dispoId, valor:_val} ).toPromise()
+    //return this._http.post(str, {fecha: _fecha, valor:_val, dipositivoId:_dispoId} ).toPromise()
+    return this._http.post(str, {fecha:med.fecha, valor:med.valor, dispositivoId:med.dispositivoId} ).toPromise()
       .then((result)=>{
         console.log("Promesa nuevaMedicion finalizada: ");   
         return result;
@@ -64,3 +62,7 @@ Devuelve una promesa de última medicion para un dispositivo, haciento un http g
   }
     
 }
+/*
+
+
+*/

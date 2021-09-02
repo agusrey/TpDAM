@@ -116,6 +116,16 @@ INSERT INTO `Mediciones` (`medicionId`, `fecha`, `valor`, `dispositivoId`) VALUE
 (11, '2020-11-26 21:19:41', '12', 2);
 
 --
+INSERT INTO `Log_Riegos` (`logRiegoId`, `apertura`, `fecha`, `electrovalvulaId`) VALUES
+(1, 1, '2021-08-31 18:18:09', 1),
+(2, 1, '2021-08-31 18:18:19', 2),
+(3, 1, '2021-08-31 18:18:29', 3),
+(4, 1, '2021-08-31 18:18:39', 4),
+(5, 1, '2021-08-31 18:18:49', 5),
+(6, 1, '2021-08-31 18:18:55', 6);
+
+
+
 -- Índices para tablas volcadas
 --
 

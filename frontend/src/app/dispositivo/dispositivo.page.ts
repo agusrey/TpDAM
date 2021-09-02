@@ -53,9 +53,9 @@ export class DispositivoPage implements OnInit, ViewDidEnter, ViewWillEnter {
      public mServ:MedicionesService,
      public modalCrtl:ModalController) {
        
-     //this.valorObtenido=50;
+
   
-      /* setTimeout(() => {
+    setTimeout(() => {
       this.valorObtenido = this.ultimaMedicionDispo.valor;
       console.log('Cambio el valor del sensor = ' + this.valorObtenido);
       
@@ -71,14 +71,13 @@ export class DispositivoPage implements OnInit, ViewDidEnter, ViewWillEnter {
           },
         ],
       });
-    }, 5000); */
+    }, 5000); 
     
    } 
   
   ngOnInit() {
     this.dispoId = this.router.snapshot.paramMap.get('id');
     console.log("dispositivo= "+ this.dispoId );
-
     this.getDispo();  //recupera el objeto this.dispositivo y sus variables
   }
 
@@ -88,9 +87,8 @@ export class DispositivoPage implements OnInit, ViewDidEnter, ViewWillEnter {
   }
 
   ionViewDidEnter() {
-    console.log('ionViewDidEnter ');
-    this.valorObtenido=20;
-    this.generarChart();
+    console.log('ionViewDidEnter: ' + this.valorObtenido);
+    this.generarChart(this.valorObtenido);
   }
 
 // recupera el dispositivo de la BD y la información asociadas, utilizando los servicios
@@ -99,6 +97,7 @@ export class DispositivoPage implements OnInit, ViewDidEnter, ViewWillEnter {
     this.ultimaMedicionDispo = await this.mServ.getUltimaMedicionId(this.dispoId);
     this.valorObtenido=this.ultimaMedicionDispo.valor;
     console.log("ultimo valor obtenido: " + this.valorObtenido);
+
     this.ultimoRiegoDispo = await this.lServ.getUltimoRiegoId(this.dispoId);
     this.estadoEvDispo=this.ultimoRiegoDispo.apertura;
   }
@@ -128,6 +127,9 @@ export class DispositivoPage implements OnInit, ViewDidEnter, ViewWillEnter {
     this.nuevoRiego();
   }
 
+
+  /* Obtiene las mediciones del dispositivo y las muestra en la lista del modal*/
+
   async listarMediciones(){
     console.log("mediciones: ");
     this.medicionesDispo = await this.mServ.getMedicionesId(this.dispoId);
@@ -136,51 +138,45 @@ export class DispositivoPage implements OnInit, ViewDidEnter, ViewWillEnter {
     if(this.medicionesDispo.length==0) alert("No existen registros de Mediciones")
     this.initModalMediciones();
   }
+
+  /* Obtiene el log de riegos del dispositivo y las muestra en la lista del modal*/
   async listarRiegos(){
     console.log("riegos: ");
     this.logRiegoDispo = await this.lServ.getLogRiegosId(this.dispoId);
-    //console.log(this.logRiegoDispo);
-    //console.log("verificando riegos");
-    //this.initModalRiegos();
+    console.log("verificando riegos");
     if(this.logRiegoDispo.length==0) alert("No existen registros de Riegos")
     else this.initModalRiegos();
   }
 
-
+/*  Al pulsar el botón de accionamiento de la electroválvula se togglea la misma,
+se genera un nuevo registro de riego y se simula una medición para luego registrarla
+*/
   async nuevoRiego(){
-    let nrAp:number;
+    let nrAp:number = 0;
     if(this.ultimoRiegoDispo.apertura==0) nrAp=1;
-    else nrAp=0;
+    
     let fecha: Date = new Date();
     let valv:number = Number(this.dispoId); 
-    let nRiego:LogRiego = new LogRiego(0,nrAp,fecha,valv);
+    let nRiego:LogRiego = await new LogRiego(0,nrAp,fecha,valv);
     console.log("nRiego= " + nRiego);
     let result:any = await this.lServ.nuevoLogRiegos(nRiego);
     this.ultimoRiegoDispo = await this.lServ.getUltimoRiegoId(this.dispoId);
     this.estadoEvDispo=this.ultimoRiegoDispo.apertura;
     //ahora genera una medición ficticia y la registra
     let fecha2: Date = new Date();
-    let nMedValor = 69;//Math.floor(Math.random()*100);
-    if(nMedValor<0) nMedValor=10;
+    let nMedValor = Math.floor(Math.random()*100);
+    if(nMedValor<10) nMedValor=10;
     if(nMedValor>100) nMedValor=100;
     console.log("nuevo valor medicion "+ nMedValor);
-    let result2= await this.mServ.nuevaMedicion(new Mediciones(0,fecha2,nMedValor,Number(this.dispoId)));
+    let nMedicion:Mediciones = await new Mediciones(0,fecha2,nMedValor,this.dispoId);
+    let result2= await this.mServ.nuevaMedicion(nMedicion);
+    console.log(result2);
     this.ultimaMedicionDispo = await this.mServ.getUltimaMedicionId(this.dispoId);
-
- /*    this.myChart.update({
-      series: [
-        {
-          name: 'Humedad %',
-          data: [this.ultimaMedicionDispo.valor],
-          tooltip: {
-            valueSuffix: ' % ',
-          },
-        },
-      ],
-    });
- */
+    this.valorObtenido=this.ultimaMedicionDispo.valor;
   }
 
+
+// inicia el modal que muestra los riegos
   async initModalRiegos() {
     const modal = await this.modalCrtl.create({
       component: ModalPage,
@@ -190,16 +186,10 @@ export class DispositivoPage implements OnInit, ViewDidEnter, ViewWillEnter {
         tipo: 'LogRiegos',
       }
     });
-
-/*   modal.onDidDismiss().then((modalDataResponse) => {
-      if (modalDataResponse !== null) {
-        this.modalDataResponse = modalDataResponse.data;
-        console.log('Modal Sent Data : '+ modalDataResponse.data);
-      }
-    }); */
     await modal.present();
   }
-
+  
+// inicia el modal que muestra las mediciones
   async initModalMediciones() {
     const modal = await this.modalCrtl.create({
       component: ModalPage,
@@ -209,13 +199,6 @@ export class DispositivoPage implements OnInit, ViewDidEnter, ViewWillEnter {
         tipo: 'Mediciones',
       }
     });
-
-/*   modal.onDidDismiss().then((modalDataResponse) => {
-      if (modalDataResponse !== null) {
-        this.modalDataResponse = modalDataResponse.data;
-        console.log('Modal Sent Data : '+ modalDataResponse.data);
-      }
-    }); */
     await modal.present();
   }
 
@@ -224,7 +207,7 @@ export class DispositivoPage implements OnInit, ViewDidEnter, ViewWillEnter {
 
 
 
-  generarChart() {
+  generarChart(valor:number) {
     this.chartOptions={
       chart: {
           type: 'gauge',
@@ -285,7 +268,7 @@ export class DispositivoPage implements OnInit, ViewDidEnter, ViewWillEnter {
   
     series: [{
         name: 'kPA',
-        data: [this.valorObtenido],
+        data: [valor],
         tooltip: {
             valueSuffix: ' kPA'
         }

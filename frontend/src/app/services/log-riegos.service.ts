@@ -50,12 +50,9 @@ Devuelve una promesa de lista de riegos para un dispositivo, haciento un http ge
   */
   nuevoLogRiegos(lr:LogRiego){
     let str:string = this.urlApi + "/riego/nuevo";
-    let _evId = lr.electrovalvulaId;
-    let _fecha = lr.fecha;
-    let _ap  = lr.apertura;
     console.log("Promesa nuevoLogRiegos iniciada");
     console.log("el string del endpoint es: "+str);
-    return this._http.post(str, {electrovalvulaId:_evId, fecha:_fecha , apertura:_ap} ).toPromise()
+    return this._http.post(str, {electrovalvulaId:lr.electrovalvulaId, fecha:lr.fecha , apertura:lr.apertura} ).toPromise()
       .then((result)=>{
         console.log("Promesa nuevoLogRiegos finalizada");
         return result;
